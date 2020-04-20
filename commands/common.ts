@@ -33,3 +33,7 @@ export const donate: Commands = [
     /(\w)*donate(\w)*/i,
     /(\w)*donation(\w)*/i,
 ];
+
+export const corona: Commands = [
+    /(\w)*corona(\w)*/i
+];

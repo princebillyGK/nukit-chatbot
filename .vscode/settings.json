@@ -3,5 +3,27 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
+    ],
+    "sqltools.connections": [
+        {
+            "database": "bloodbank",
+            "dialect": "MySQL",
+            "isActive": true,
+            "isConnected": true,
+            "name": "localhost",
+            "password": "root",
+            "port": 3306,
+            "server": "localhost",
+            "username": "root"
+        },
+        {
+            "database": "nukit",
+            "dialect": "MySQL",
+            "name": "Azure NUKIT",
+            "password": "tQQ3zFQbiE5s57S",
+            "port": 3306,
+            "server": "nukit.mysql.database.azure.com",
+            "username": "princebillyGK@nukit"
+        }
     ]
 }

@@ -1,91 +1,72 @@
-import { resultCatalog, rootUrl } from '../data/result';
-import { REG_CANCEL, REG_RESET } from '../lib/RegexTemplates'
-import { cancelMessage, invalidInputMessage, someErrorMessage } from '../templates/common'
-import { NavigationQuickReply } from '../components/common';
+import { resultCatalog, rootUrl } from '../data/course.data';
+import { REG_CANCEL, REG_RESET, REG_YES } from '../lib/RegexTemplates'
+import { TemplateQuickReplies } from '../components/common';
 import request from 'request-promise-native';
-import { NavigationItems } from 'types/common';
-import {resultTextOutput} from '../templates/result';
+import { resultTextOutput } from '../templates/result';
+import { checkServerStatusURL } from '../lib/utill';
+import * as nlp from '../lib/nlp'
+import { courseTags } from '../data/course.tag.data';
+import { NavigationMessage } from '../templates/common'
+import { ConversationController } from '../abstract/ConversationController'
 
+export class ResultController extends ConversationController {
 
-export function startResultConversation(payload, chat) {
-    function askCatagory(convo) {
-        let query = 'Select one of the following catagory: \n';
-        query += resultCatalog.map((item, index) => `Type ${index + 1} for ${item.type} catagory`).join('\n');
-        let question = {
-            text: query,
-            quickReplies: NavigationQuickReply(
-                resultCatalog.map(item => ({
-                    title: item.type,
-                    code: item.code,
-                    img: item.img,
-                }) as NavigationItems)
-            )
-        };
+    private catagoryIndex: number;
+    private courseIndex: number;
 
+    constructor(payload, chat) {
 
-        let answer = (payload, convo) => {
-            const text = payload.message.text;
-
-            //check if user cancelled the conversation
-            if (REG_CANCEL.test(text)) {
-                convo.say(cancelMessage);
-                convo.end();
-                return;
-            }
-
-            try {
-                let input = parseInt(text) - 1;
-                convo.set('indexOfCatagory', input);
-                askCourse(convo);
-            } catch (e) {
-                convo.say(invalidInputMessage).then(() => askCatagory(convo));
-            }
+        super(chat);
+        console.log(checkServerStatusURL(rootUrl));
+        try {
+            request(checkServerStatusURL(rootUrl)).then(html => {
+                const { result, error } = JSON.parse(html);
+                if (result === false) {
+                    throw new Error("Server not active");
+                } else if (error) {
+                    throw error
+                }
+            })
+        } catch (e) {
+            console.log(e);
+            this.conversation.say("The server www.nu.ac.bd is currently down so, we cannot retrive result. Please try again later");
+            this.sendSomeThingWrong()
+            return;
         }
 
-        let cb = [
-            {
-                event: 'quick_reply',
-                callback: (payload) => {
-                    convo.set('indexOfCatagory', resultCatalog.findIndex(item => item.code == payload.message.quick_reply.payload));
-                    askCourse(convo);
-                }
-            }
-        ];
+        const txt = payload.message.text;
+        const matchedCourseIndex = courseTags.findIndex(({ tags }) => nlp.isInString(txt, tags));
+        const matchedCatagoryIndex = resultCatalog.findIndex(({ tags }) => nlp.isInString(txt, tags));
 
-        convo.ask(question, answer, cb, { typing: true });
+        if (matchedCourseIndex != -1) {
+
+            this.catagoryIndex =
+                resultCatalog.findIndex(({ code }) => courseTags[matchedCourseIndex].catagoryCode == code);
+            this.courseIndex = resultCatalog[this.catagoryIndex]
+                .courses.findIndex(({ code }) => courseTags[matchedCourseIndex].courseCode == code);
+            this.startQuery();
+
+        } else if (matchedCatagoryIndex != -1) {
+            this.catagoryIndex = matchedCourseIndex;
+            this.getCourse();
+        } else {
+            this.getCatagory();
+        }
     }
 
-    function askCourse(convo) {
-        let query = `Select one of the following course: \n`;
-        let indexOfCatagory = convo.get('indexOfCatagory');
-        query += resultCatalog[indexOfCatagory].courses
-            .map((item, index) => `Type ${index + 1} for ${item.course}`).join('\n');
-        let question = {
-            text: query,
-            quickReplies: NavigationQuickReply(
-                resultCatalog[indexOfCatagory].courses.map(item => ({
-                    title: item.course,
-                    code: item.code,
-                    img: item.img,
-                }) as NavigationItems)
-            )
-        };
+    private getCatagory() {
+        let query = NavigationMessage(resultCatalog);
+
         let answer = (payload, convo) => {
             const text = payload.message.text;
-
-            //check if user cancelled the conversation
-            if (text.match(cancelMessage)) {
-                convo.say(cancelMessage);
-                convo.end();
-                return;
-            }
             try {
                 let input = parseInt(text) - 1;
-                convo.set('indexOfCourse', input);
-                startQuery(convo);
+                console.log(resultCatalog[input]);
+                this.catagoryIndex = input;
+                this.getCourse();
             } catch (e) {
-                convo.say(invalidInputMessage).then(() => askCourse(convo));
-                console.log(e);
+                this.sendInvalidInput();
+                this.getCatagory();
             }
         }
 
@@ -93,93 +74,209 @@ export function startResultConversation(payload, chat) {
             {
                 event: 'quick_reply',
                 callback: (payload) => {
-                    convo.set('indexOfCourse', resultCatalog[indexOfCatagory].courses.findIndex(item => item.code == payload.message.quick_reply.payload));
-                    startQuery(convo);
+                    const event = payload.message.quick_reply.payload;
+                    console.log(event)
+                    if (event == "CANCEL") {
+                        this.cancelConversation();
+                        return;
+                    }
+                    this.catagoryIndex = resultCatalog.findIndex(item => item.code == payload.message.quick_reply.payload);
+                    this.getCourse();
+                },
+            },
+            {
+                pattern: REG_CANCEL,
+                callback: (payload) => {
+                    this.cancelConversation();
+                    return;
                 }
             }
         ];
 
-        convo.ask(question, answer, cb, { typing: true });
+        this.conversation.ask(query, answer, cb, { typing: true });
+    }
+
+    private getCourse() {
+
+        let query = NavigationMessage(resultCatalog[this.catagoryIndex].courses);
+        let answer = (payload, convo) => {
+            const text = payload.message.text;
+            try {
+                let input = parseInt(text) - 1;
+                console.log(resultCatalog[this.catagoryIndex].courses[input].title);
+                this.courseIndex = input;
+                this.startQuery();
+            } catch (e) {
+                this.sendInvalidInput();
+                this.getCourse();
+            }
+        }
+
+        let cb = [
+            {
+                event: 'quick_reply',
+                callback: (payload) => {
+                    const event = payload.message.quick_reply.payload;
+                    console.log(event)
+                    if (event == "CANCEL") {
+                        this.cancelConversation();
+                        return;
+                    }
+                    this.courseIndex = resultCatalog[this.catagoryIndex].courses.findIndex(item => item.code == payload.message.quick_reply.payload);
+                    this.startQuery();
+                }
+            },
+            {
+                pattern: REG_CANCEL,
+                callback: (payload) => {
+                    this.cancelConversation();
+                    return;
+                }
+            }
+        ];
+
+        this.conversation.ask(query, answer, cb, { typing: true });
     };
 
-    function startQuery(convo) {
-        let indexOfCatagory = convo.get('indexOfCatagory');
-        let indexOfCourse = convo.get('indexOfCourse');
-        convo.say(
-            `Anwer the following queries for ${resultCatalog[indexOfCatagory].type}>${resultCatalog[indexOfCatagory].courses[indexOfCourse].course} result:`,
+
+    private async startQuery() {
+        await this.conversation.say(
+            `Anwer the following queries for ${resultCatalog[this.catagoryIndex].title} > ${resultCatalog[this.catagoryIndex].courses[this.courseIndex].title} result:`,
             { typing: true }
-        ).then(() => {
-            let firstQueryDone: boolean = false;
-            let numberOfParams = resultCatalog[indexOfCatagory].courses[indexOfCatagory].params.length;
-            let queryFuncs = resultCatalog[indexOfCatagory].courses[indexOfCourse].params.map(field => {
-                //making query list for nessesary parameters
-                return (callbacks, index = 1) => {
-                    let question = `Enter ${field.fieldDefination}: ${firstQueryDone ? 'and type "reset" to restart the query' : ""}`
-                    let answer = (payload, convo) => {
-                        const text = payload.message.text;
-                        if (text.match(REG_RESET) && firstQueryDone) {
-                            startQuery(convo);
+        );
+        let firstQueryDone: boolean = false;
+        let urlParams = [];
+        const numberOfParams = await resultCatalog[this.catagoryIndex].courses[this.courseIndex].params.length;
+        const queryFuncs = await resultCatalog[this.catagoryIndex].courses[this.courseIndex].params.map(param => {
+            return (callbacks, index = 1) => {
+                const txtQuery =
+                    `Enter ${param.title}: ${firstQueryDone ? 'and type "reset" to restart the query' : ""}`;
+                const query = {
+                    text: txtQuery,
+                    quickReplies: [
+                        ...firstQueryDone ? [TemplateQuickReplies.reset] : [],
+                        TemplateQuickReplies.cancel
+                    ]
+                }
+
+                const answer = (payload, convo) => {
+                    const text = payload.message.text;
+                    if (text.match(REG_RESET) && firstQueryDone) {
+                        this.startQuery();
+                        return;
+                    }
+                    urlParams[param.field] = text;
+                    firstQueryDone = true;
+                    if (index < numberOfParams) {
+                        callbacks[index](callbacks, index + 1);
+                    } else this.showResult(urlParams);
+                }
+
+                const cb = [
+                    {
+                        event: 'quick_reply',
+                        callback: (payload) => {
+                            const event = payload.message.quick_reply.payload;
+                            console.log(event)
+                            if (event == "CANCEL") {
+                                this.cancelConversation();
+                                return;
+                            } else if (event == "RESET") {
+                                this.startQuery();
+                                return
+                            }
+                        }
+                    },
+                    {
+                        pattern: REG_CANCEL,
+                        callback: (payload) => {
+                            this.cancelConversation();
                             return;
                         }
-                        convo.set(field.field, text);
-                        firstQueryDone = true;
-                        if (index < numberOfParams) {
-                            callbacks[index](callbacks, index + 1);
-                        } else showResult(convo);
+                    },
+                    {
+                        pattern: REG_RESET,
+                        callback: (payload) => {
+                            this.startQuery();
+                            return;
+                        }
                     }
-                    convo.ask(question, answer, [], { typing: true });
-                };
-            });
-            queryFuncs[0](queryFuncs);
+                ];
 
+                this.conversation.ask(query, answer, cb, { typing: true });
+            };
         });
-    };
 
-    function showResult(convo) {
-        let indexOfCatagory = convo.get('indexOfCatagory');
-        let indexOfCourse = convo.get('indexOfCourse');
-        let url = rootUrl + resultCatalog[indexOfCatagory].courses[indexOfCourse].urlExt + '?';
-        resultCatalog[indexOfCatagory].courses[indexOfCourse].params.forEach(param =>
-            url += `${param.field}=${convo.get(param.field)}&`
-        );
+        queryFuncs[0](queryFuncs);
+    }
 
+    private showResult(urlParams) {
+        console.log(urlParams)
+        let url = rootUrl + resultCatalog[this.catagoryIndex].courses[this.courseIndex].urlExt + '?';
+        for (let key in urlParams) {
+            url += `${key}=${urlParams[key]}&`
+        }
         console.log(url);
         try {
             request(url).then((html => {
-                const parser = resultCatalog[indexOfCatagory].courses[indexOfCourse].parser;
+                console.log(html);
+                const parser = resultCatalog[this.catagoryIndex].courses[this.courseIndex].parser;
                 let parserResponse = parser(html);
                 if (parserResponse) {
-                    convo.say(resultTextOutput(parserResponse));
+                    this.conversation.say(resultTextOutput(parserResponse));
                 }
                 else {
-                    convo.say('Result not found')
+                    this.conversation.say('Result not found')
                 }
 
             }));
         } catch (e) {
-            convo.say(someErrorMessage);
-            convo.end();
+            console.log(e)
+            this.sendSomeThingWrong();
             return;
         }
 
         let question = {
             text: 'Do you want to see another result from this course?\ntype "yes" or "no"',
-            quickReplies: ["yes", "no"]
+            quickReplies: [
+                TemplateQuickReplies.yes,
+                TemplateQuickReplies.cancel
+            ]
         }
+        console.log(question);
+        let answer = (payload, chat) => { }
+        const cb =
+            [
+                {
+                    event: 'quick_reply',
+                    callback: (payload) => {
+                        const event = payload.message.quick_reply.payload;
+                        console.log(event)
+                        if (event == "CANCEL") {
+                            this.cancelConversation();
+                            return;
+                        } else if (event == "YES") {
+                            this.startQuery();
+                            return
+                        }
+                    }
+                },
+                {
+                    pattern: REG_CANCEL,
+                    callback: (payload) => {
+                        this.goodBye();
+                        return;
+                    }
+                },
+                {
+                    pattern: REG_YES,
+                    callback: (payload) => {
+                        this.startQuery();
+                        return;
+                    }
+                }
+            ];
 
-        let answer = (payload, chat) => {
-            const text = payload.message.text;
-            if (text.match(/(\w)*(yes)|(yea)|(yo)(\w)*/)) {
-                startQuery(convo);
-            } else {
-                convo.say("Good bye. See you again.");
-                convo.end()
-            }
-        }
-        convo.ask(question, answer, [], { typing: true });
-    };
-
-    chat.conversation((convo) => {
-        askCatagory(convo);
-    });
+        this.conversation.ask(question, answer, cb, { typing: true });
+    }
 }
