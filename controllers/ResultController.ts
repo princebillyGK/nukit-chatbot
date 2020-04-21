@@ -1,5 +1,5 @@
 import { resultCatalog, rootUrl } from '../data/course.data';
-import { REG_CANCEL, REG_RESET, REG_YES } from '../lib/RegexTemplates'
+import { REG_CANCEL, REG_RESET, REG_YES, REG_NO } from '../lib/RegexTemplates'
 import { TemplateQuickReplies } from '../components/common';
 import request from 'request-promise-native';
 import { resultTextOutput } from '../templates/result';
@@ -45,9 +45,8 @@ export class ResultController extends ConversationController {
             this.courseIndex = resultCatalog[this.catagoryIndex]
                 .courses.findIndex(({ code }) => courseTags[matchedCourseIndex].courseCode == code);
             this.startQuery();
-
         } else if (matchedCatagoryIndex != -1) {
-            this.catagoryIndex = matchedCourseIndex;
+            this.catagoryIndex = matchedCatagoryIndex;
             this.getCourse();
         } else {
             this.getCatagory();
@@ -98,6 +97,7 @@ export class ResultController extends ConversationController {
 
     private getCourse() {
 
+        console.log(this.catagoryIndex);
         let query = NavigationMessage(resultCatalog[this.catagoryIndex].courses);
         let answer = (payload, convo) => {
             const text = payload.message.text;
@@ -274,7 +274,14 @@ export class ResultController extends ConversationController {
                         this.startQuery();
                         return;
                     }
-                }
+                },
+                {
+                    pattern: REG_NO,
+                    callback: (payload) => {
+                        this.cancelConversation();
+                        return;
+                    }
+                },
             ];
 
         this.conversation.ask(question, answer, cb, { typing: true });

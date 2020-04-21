@@ -5,4 +5,7 @@ const metadata = {
     domain: "https://nukit.live"
 }
 
+export const donateURL = 'https://forms.gle/NZ6GPsaSwGCsusjT6'
+export const feedBackURL = 'https://nukit.atlassian.net/servicedesk/customer/portal/3'
+
 export default metadata;

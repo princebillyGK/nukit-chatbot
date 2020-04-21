@@ -1,4 +1,5 @@
 import { Navigation } from '../types/common';
+import { donateURL, feedBackURL } from '../data/metadata';
 
 export const TemplateQuickReplies = {
     reset: {
@@ -34,4 +35,16 @@ export function NavigationQuickReply(navigationItems: Navigation) {
         TemplateQuickReplies.cancel
     ];
 }
+
+export const DonateButton = {
+    type: "web_url",
+    url: donateURL,
+    title: "💰 Donate Me"
+};
+
+export const FeedBackButton = {
+    type: "web_url",
+    url: feedBackURL,
+    title: "📝 Feedback"
+};
 

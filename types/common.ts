@@ -1,4 +1,5 @@
-export type Commands = (string | RegExp)[]
+export type Commands = (string | RegExp)[];
+
 export interface NavigationItems {
     title: string,
     code: string
@@ -6,8 +7,8 @@ export interface NavigationItems {
     tags?: string[],
     callback? : CallableFunction
 }
-export type Navigation = NavigationItems[];
 
+export type Navigation = NavigationItems[];
 
 //result parser
 export interface ResultParserSuccessOutput {
@@ -17,7 +18,9 @@ export interface ResultParserSuccessOutput {
     cgpa: string,
     grades: { [key: string]: string }
 }
+
 export type ResultParserOutput = ResultParserSuccessOutput | false;
+
 export interface ResultParser {
     (html: string): ResultParserOutput;
 };

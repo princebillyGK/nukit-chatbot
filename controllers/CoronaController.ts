@@ -4,12 +4,11 @@ import { CoronaStatMsg, CoronaHelpline } from '../templates/corona';
 import * as nlp from '../lib/nlp';
 import { ConversationController } from '../abstract/ConversationController'
 import { REG_CANCEL } from '../lib/RegexTemplates';
-import {NavigationMessage} from '../templates/common'
+import { NavigationMessage } from '../templates/common'
 
 export class CoronaController extends ConversationController {
     private readonly sourceURL = 'https://corona-api.cramstack.com/';
     private readonly menuItem: Navigation = [
-
         {
             title: "Show Helplines",
             code: "CORONA_HELPLINE",
@@ -51,6 +50,7 @@ export class CoronaController extends ConversationController {
                         this.cancelConversation();
                         return;
                     }
+                    console.log(event);
                     this.menuItem.find(item => item.code == event).callback()
                 },
             },

@@ -1,4 +1,4 @@
-import { PorterStemmer, WordTokenizer, Tokenizer } from 'natural';
+import { PorterStemmer, WordTokenizer} from 'natural';
 const { stem } = PorterStemmer;
 const tokenizer = new WordTokenizer();
 

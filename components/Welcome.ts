@@ -1,4 +1,5 @@
 import metadata from '../data/metadata';
+import {DonateButton, FeedBackButton} from './common'
 
 export function welcomeMsg(user) {
     return [
@@ -17,7 +18,9 @@ export function welcomeMsg(user) {
                     "type": "postback",
                     "title": "Get Started",
                     "payload": "OPEN_MENU"
-                }
+                },
+                FeedBackButton,
+                DonateButton
             ]
         }
     ]

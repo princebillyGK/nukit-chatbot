@@ -16,13 +16,13 @@ export const mainMenu: Navigation = [
     {
         title: "Corona Info",
         code: "CORONA",
-        img: "https://i.ibb.co/qJT18D3/corona-virus.png"
+        img: "https://i.ibb.co/qJT18D3/corona-virus.png",
     },
 
     {
         title: "Check Results",
         code: 'RESULT',
-        img: 'https://i.ibb.co/wQ3fTwf/result.png'
+        img: 'https://i.ibb.co/wQ3fTwf/result.png',
     },
 
 
