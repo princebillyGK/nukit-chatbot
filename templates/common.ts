@@ -8,7 +8,6 @@ export const goodByeMessage = '👋 | Good Bye for now! See you again';
 interface DefaultNavigationMessageOptions {
     cancel?: boolean,
     reset?: boolean
-
 }
 const defaultNavigationMessageOptions = {
     cancel: false,
