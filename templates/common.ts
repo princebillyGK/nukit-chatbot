@@ -1,5 +1,5 @@
 import { NavigationQuickReply } from '../components/common'
-import {Navigation } from '../types/common';
+import {NavigationItemView } from '../types/common';
 export const invalidInputMessage = '⚠️ | Invalid input';
 export const someErrorMessage = '🤔 | Something went wrong please try again letter';
 export const canceledMessage = '😧 | Ok fine.';
@@ -14,7 +14,7 @@ const defaultNavigationMessageOptions = {
     reset: false
 }
 
-export const NavigationMessage = (heading, navigation:Navigation, options:DefaultNavigationMessageOptions =defaultNavigationMessageOptions) => {
+export const NavigationMessage = (heading, navigation:NavigationItemView[], options:DefaultNavigationMessageOptions =defaultNavigationMessageOptions) => {
     let text: string = `${heading}\n`;
     let counter = 0;
     text+= navigation.map((item): string =>

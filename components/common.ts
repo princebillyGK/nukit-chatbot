@@ -1,4 +1,4 @@
-import { Navigation } from '../types/common';
+import { NavigationItemView } from '../types/common';
 import { donateURL, feedBackURL } from '../data/metadata';
 
 export const TemplateQuickReplies = {
@@ -24,7 +24,7 @@ export const TemplateQuickReplies = {
     },
 };
 
-export function NavigationQuickReply(navigationItems: Navigation) {
+export function NavigationQuickReply(navigationItems: NavigationItemView[]) {
     return [
         ...navigationItems.map((item) => {
             return {
@@ -40,12 +40,14 @@ export function NavigationQuickReply(navigationItems: Navigation) {
 export const DonateButton = {
     type: "web_url",
     url: donateURL,
-    title: "💰 Donate Me"
+    title: "💰 Donate Me",
+    webview_height_ratio: "full",
+    messenger_extensions: "true",
 };
 
 export const FeedBackButton = {
     type: "web_url",
     url: feedBackURL,
-    title: "📝 Feedback"
+    title: "📝 Feedback",
 };
 

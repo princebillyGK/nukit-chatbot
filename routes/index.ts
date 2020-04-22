@@ -1,5 +1,5 @@
 import * as nlp from "../lib/nlp";
-import { Navigation } from '../types/common'
+import { NavigationItemFunctional } from '../types/common'
 import { welcomeText, openNavigation, thankReply, goodByeReply, forgiveMeReply, sorryReply } from '../controllers/common'
 import { CoronaController } from '../controllers/CoronaController';
 import { ResultController } from '../controllers/ResultController'
@@ -7,27 +7,20 @@ import { ResultController } from '../controllers/ResultController'
 
 export async function Router(payload, chat) {
     const text = payload.message.text;
-    const mainMenu: Navigation = [
-
+    const mainMenu: NavigationItemFunctional[] = [
         {
             title: "Corona Info",
-            code: "CORONA",
-            img: "https://i.ibb.co/qJT18D3/corona-virus.png",
             tags: ['corona', 'covid'],
             callback: (payload, chat) => new CoronaController(payload, chat)
         },
         {
             title: "Check Results",
-            code: 'RESULT',
-            img: 'https://i.ibb.co/wQ3fTwf/result.png',
             tags: ['result', 'marks'],
             callback: (payload, chat) => new ResultController(payload, chat)
         },
 
         {
             title: "Navigation Menu",
-            code: 'RESULT',
-            img: 'https://i.ibb.co/wQ3fTwf/result.png',
             tags: ['nukit', 'menu', 'navigation', 'help'],
             callback: openNavigation
         }
@@ -70,12 +63,13 @@ export async function Router(payload, chat) {
                 }
             } else {
                 sorryReply(payload, chat);
-                
+
 
             }
         }
     } else {
         sorryReply(payload, chat);
     }
+    console.log(text);
     // console.log(JSON.stringify(payload));
 }

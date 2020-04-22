@@ -1,4 +1,4 @@
-import { Navigation } from "../types/common";
+import { NavigationItem } from "../types/common";
 import request from 'request-promise-native';
 import { CoronaStatMsg, CoronaHelpline } from '../templates/corona';
 import { ConversationController } from '../abstract/ConversationController'
@@ -7,7 +7,7 @@ import { NavigationMessage } from '../templates/common'
 
 export class CoronaController extends ConversationController {
     private readonly sourceURL = 'https://corona-api.cramstack.com/';
-    private readonly menuItem: Navigation = [
+    private readonly menuItem: NavigationItem[] = [
         {
             title: "Show Helplines",
             img: "https://i.ibb.co/xqMgtyh/help.png",

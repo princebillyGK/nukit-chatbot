@@ -1,5 +1,3 @@
-import request from "request";
-
 export function toTitleCase(str:string) {
     return str.replace(
         /\w\S*/g,

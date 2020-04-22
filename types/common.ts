@@ -1,14 +1,16 @@
 export type Commands = (string | RegExp)[];
-
-export interface NavigationItems {
+export interface NavigationItemView {
     title: string,
-    code?: string
     img: string,
-    tags: string[],
-    callback? : CallableFunction
 }
 
-export type Navigation = NavigationItems[];
+export interface NavigationItemFunctional {
+    title: string,
+    tags: string[],
+    callback?: CallableFunction
+}
+
+export interface NavigationItem extends NavigationItemView, NavigationItemFunctional {}
 
 //result parser
 export interface ResultParserSuccessOutput {

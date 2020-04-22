@@ -52,7 +52,7 @@ export function openNavigation(payload, chat) {
 }
 
 export async function sorryReply({ sender: { id: senderid }, message: { text } }, chat) {
-    const msg = "Sorry I can't reconize your query with any of my services. I will keep it as log so that I can learn it leter. Type 'nukit' to see available options."
+    const msg = "Sorry I can't reconize your query with any of my services. I will keep it as log so that I can learn it later. Type 'nukit' to see available options."
     chat.say(msg);
     chat.getUserProfile().then(async (user) => {
         try {

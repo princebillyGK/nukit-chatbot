@@ -1,10 +1,10 @@
 
 import * as resultParser from '../lib/resultParser'
-import { NavigationItems } from '../types/common';
+import { NavigationItem } from '../types/common';
 
 type CourseList = Course[];
 
-interface Course extends NavigationItems {
+interface Course extends NavigationItem {
 	urlExt: string
 	parser: CallableFunction
 	params: { field: string, title: string }[]
