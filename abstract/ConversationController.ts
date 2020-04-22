@@ -1,4 +1,6 @@
 import {canceledMessage, goodByeMessage, someErrorMessage, invalidInputMessage} from '../templates/common'
+import { Navigation } from "../types/common";
+import * as nlp from '../lib/nlp';
 
 export abstract class ConversationController {
     public conversation;
@@ -22,6 +24,17 @@ export abstract class ConversationController {
     }
     protected endConversation() {
         this.conversation.end();
+    }
+    protected getChoice(text: string, menu: Navigation, successCallback:CallableFunction, failCallback:CallableFunction, warning: boolean = false) {
+        const matchedIndex = menu.findIndex((({ tags }) => nlp.isInString(text, tags)))
+        if (matchedIndex != -1) {
+            successCallback(matchedIndex);
+        } else {
+            if (warning) {
+                this.conversation.say("Please Choose one of options or say cancel");
+            }
+            failCallback();
+        }
     }
 }
 

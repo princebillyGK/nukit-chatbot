@@ -1,8 +1,8 @@
 import { welcomeMsg } from '../components/Welcome';
-import { navigationGenerator } from '../lib/responseGen';
 import { mainMenu } from '../data/common'
-import { NavigationQuickReply, DonateButton, FeedBackButton } from '../components/common'
+import { DonateButton, FeedBackButton } from '../components/common'
 import { getMySQLConnection } from '../lib/database/mysql-connection';
+import { NavigationMessage } from '../templates/common';
 
 export function welcomeText(payload, chat) {
     chat.getUserProfile().then((user) => {
@@ -48,10 +48,7 @@ export function goodByeReply(payload, chat) {
 }
 
 export function openNavigation(payload, chat) {
-    chat.say({
-        text: navigationGenerator("Select one of the options below:", mainMenu),
-        quickReplies: NavigationQuickReply(mainMenu)
-    });
+    chat.say(NavigationMessage("You can choose between any of the options", mainMenu));
 }
 
 export async function sorryReply({ sender: { id: senderid }, message: { text } }, chat) {

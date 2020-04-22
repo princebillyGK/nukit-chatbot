@@ -77,5 +77,5 @@ export async function Router(payload, chat) {
     } else {
         sorryReply(payload, chat);
     }
-    console.log(JSON.stringify(payload));
+    // console.log(JSON.stringify(payload));
 }

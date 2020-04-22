@@ -2,9 +2,9 @@ export type Commands = (string | RegExp)[];
 
 export interface NavigationItems {
     title: string,
-    code: string
+    code?: string
     img: string,
-    tags?: string[],
+    tags: string[],
     callback? : CallableFunction
 }
 

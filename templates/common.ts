@@ -5,14 +5,32 @@ export const someErrorMessage = '🤔 | Something went wrong please try again le
 export const canceledMessage = '😧 | Ok fine.';
 export const goodByeMessage = '👋 | Good Bye for now! See you again';
 
-export const NavigationMessage = (navigations:Navigation) => {
-    const question = `Select one of the following options are available:\n${
-        navigations.map(({ title }, index) =>
-            `Type ${index + 1} for ${title}`
-        ).join('\n')}\nOr type "cancel" to cancel this conversation\n`;
+interface DefaultNavigationMessageOptions {
+    cancel?: boolean,
+    reset?: boolean
+
+}
+const defaultNavigationMessageOptions = {
+    cancel: false,
+    reset: false
+}
+
+export const NavigationMessage = (heading, navigation:Navigation, options:DefaultNavigationMessageOptions =defaultNavigationMessageOptions) => {
+    let text: string = `${heading}\n`;
+    let counter = 0;
+    text+= navigation.map((item): string =>
+        `${++counter}. ${item.title}`).join('\n');
+
+    if(options.reset){
+        text+= `\n${++counter}. Reset\n`
+    }
+    if(options.cancel){
+        text+= `\n${++counter}. Cancel\n`
+    }
+
     const query = {
-        text: question,
-        quickReplies: NavigationQuickReply(navigations)
+        text,
+        quickReplies: NavigationQuickReply(navigation)
     }
     return query;
 }
