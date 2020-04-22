@@ -21,13 +21,12 @@
     "@types/request": "^2.48.4",
     "@types/sanitize-html": "^1.22.0",
     "concurrently": "^5.1.0",
-    "dotenv": "^8.2.0",
     "sequelize-cli": "^5.5.1",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "@types/request-promise-native": "^1.0.17"
   },
   "dependencies": {
-    "@types/request-promise-native": "^1.0.17",
-    "awesome-typescript-loader": "^5.2.1",
+    "dotenv": "^8.2.0",
     "bootbot": "^1.0.6",
     "cheerio": "^1.0.0-rc.3",
     "config": "^1.21.0",
