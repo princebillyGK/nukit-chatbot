@@ -1,4 +1,4 @@
-import { Commands } from '../types/common';
+import { Commands } from '../types/types';
 
 export const welcomeMessage: Commands = [
     /(\w)*he(y|i)(\w)*/i,

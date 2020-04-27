@@ -1,4 +1,4 @@
-import { NavigationItem } from "../types/common";
+import { NavigationItem } from "../types/types";
 import request from 'request-promise-native';
 import { CoronaStatMsg, CoronaHelpline } from '../templates/corona';
 import { ConversationController } from '../abstract/ConversationController'

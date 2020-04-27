@@ -1,4 +1,6 @@
 export type Commands = (string | RegExp)[];
+
+//Navigation
 export interface NavigationItemView {
     title: string,
     img: string,
@@ -9,6 +11,7 @@ export interface NavigationItemFunctional {
     tags: string[],
     callback?: CallableFunction
 }
+
 
 export interface NavigationItem extends NavigationItemView, NavigationItemFunctional {}
 
@@ -26,3 +29,16 @@ export type ResultParserOutput = ResultParserSuccessOutput | false;
 export interface ResultParser {
     (html: string): ResultParserOutput;
 };
+
+//Course List
+export type CourseList = Course[];
+
+export interface FormOptions extends NavigationItem {
+	value: string
+}
+
+export interface Course extends NavigationItem {
+	urlExt: string
+	parser: CallableFunction
+	params: { field: string, title: string, options?: FormOptions[] }[]
+}

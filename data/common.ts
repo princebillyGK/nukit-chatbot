@@ -9,7 +9,7 @@
 // https://i.ibb.co/xqMgtyh/help.png
 // https://i.ibb.co/qJT18D3/corona-virus.png
 
-import {NavigationItemView} from '../types/common'
+import {NavigationItemView} from '../types/types'
 
 export const mainMenu: NavigationItemView[]= [
 

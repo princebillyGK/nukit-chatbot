@@ -1,5 +1,5 @@
 import cheerio from 'cheerio';
-import {ResultParserOutput} from '../types/common';
+import {ResultParserOutput} from '../types/types';
 
 //cse
 export function parser1(html:string):ResultParserOutput{

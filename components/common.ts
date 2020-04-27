@@ -1,4 +1,4 @@
-import { NavigationItemView } from '../types/common';
+import { NavigationItemView } from '../types/types';
 import { donateURL, feedBackURL } from '../data/metadata';
 
 export const TemplateQuickReplies = {

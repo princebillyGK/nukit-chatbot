@@ -1,5 +1,5 @@
 import * as nlp from "../lib/nlp";
-import { NavigationItemFunctional } from '../types/common'
+import { NavigationItemFunctional } from '../types/types'
 import { welcomeText, openNavigation, thankReply, goodByeReply, forgiveMeReply, sorryReply } from '../controllers/common'
 import { CoronaController } from '../controllers/CoronaController';
 import { ResultController } from '../controllers/ResultController'
@@ -49,12 +49,12 @@ export async function Router(payload, chat) {
     } else if (payload.message.hasOwnProperty("nlp")) {
         if (payload.message.nlp.hasOwnProperty('entities')) {
             const { entities } = payload.message.nlp;
-            if (entities.hasOwnProperty("greetings")) {
-                welcomeText(payload, chat);
-            } else if (entities.hasOwnProperty("thanks")) {
+            if (entities.hasOwnProperty("thanks")) {
                 thankReply(payload, chat);
             } else if (entities.hasOwnProperty("bye")) {
                 goodByeReply(payload, chat);
+            } else if (entities.hasOwnProperty("greetings")) {
+                welcomeText(payload, chat);
             } else if (entities.hasOwnProperty("sentiment")) {
                 if (entities.sentiment[0].value == "negative") {
                     forgiveMeReply(payload, chat);

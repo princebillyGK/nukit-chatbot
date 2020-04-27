@@ -1,5 +1,5 @@
 import {toTitleCase} from '../lib/utill'
-import { ResultParserSuccessOutput } from '../types/common'
+import { ResultParserSuccessOutput } from '../types/types'
 
 
 export function resultTextOutput(result: ResultParserSuccessOutput) {

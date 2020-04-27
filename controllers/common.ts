@@ -1,8 +1,8 @@
 import { welcomeMsg } from '../components/Welcome';
 import { mainMenu } from '../data/common'
 import { DonateButton, FeedBackButton } from '../components/common'
-import { getMySQLConnection } from '../lib/database/mysql-connection';
-import { NavigationMessage } from '../templates/common';
+import {NavigationMessage} from '../templates/common';
+import ibmdb from 'ibm_db';
 
 export function welcomeText(payload, chat) {
     chat.getUserProfile().then((user) => {
@@ -53,13 +53,21 @@ export function openNavigation(payload, chat) {
 
 export async function sorryReply({ sender: { id: senderid }, message: { text } }, chat) {
     const msg = "Sorry I can't reconize your query with any of my services. I will keep it as log so that I can learn it later. Type 'nukit' to see available options."
-    chat.say(msg);
+    await chat.say(msg);
     chat.getUserProfile().then(async (user) => {
         try {
-            let db = await getMySQLConnection();
-            await db.execute("insert into chatbot_unknown_message(facebookid, message) values(?, ?)", [senderid, text]);
-            await db.end();
-            console.log('added to database')
+            ibmdb.open(process.env.DB2_DSN, function (err, conn) {
+                if (err) return console.log(err);
+                const query = `INSERT INTO  "LFT32896"."CHATBOT_UNKOWN_MESSAGE"("FACEBOOKID", "MESSAGE") VALUES('${senderid}', '${text}')`
+                 console.log(query);
+                conn.query(query, function (err, data) {
+                    if (err) console.log(err);
+                    else console.log(data);
+                    conn.close(function () {
+                        console.log('done');
+                    });
+                });
+            });
         } catch (e) {
             console.log(e);
         }

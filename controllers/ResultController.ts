@@ -1,15 +1,14 @@
-import { rootUrl, CourseList } from '../data/result.course.data';
+import { rootUrl, courseList } from '../data/result.course.data';
 import { REG_CANCEL, REG_RESET, REG_YES, REG_NO } from '../lib/RegexTemplates'
 import { TemplateQuickReplies } from '../components/common';
 import request from 'request-promise-native';
 import { resultTextOutput } from '../templates/result';
 import { checkServerStatusURL } from '../lib/utill';
-import { NavigationMessage } from '../templates/common'
+import { NavigationMessage, invalidInputMessage } from '../templates/common'
 import { ConversationController } from '../abstract/ConversationController'
 
 export class ResultController extends ConversationController {
 
-    private catagoryIndex: number;
     private courseIndex: number;
 
     constructor(payload, chat) {
@@ -33,7 +32,7 @@ export class ResultController extends ConversationController {
         const txt = payload.message.text;
         this.getChoice(
             txt,
-            CourseList,
+            courseList,
             (index) => {
                 this.courseIndex = index
                 this.startQuery();
@@ -44,7 +43,7 @@ export class ResultController extends ConversationController {
 
 
     private getCourse() {
-        let query = NavigationMessage("Select one course from the list", CourseList, { cancel: true });
+        let query = NavigationMessage("Select one course from the list", courseList, { cancel: true });
         let answer = (payload, chat) => {
             const text = payload.message.text;
             if (text.match(REG_CANCEL)) {
@@ -52,7 +51,7 @@ export class ResultController extends ConversationController {
             } else {
                 this.getChoice(
                     text,
-                    CourseList,
+                    courseList,
                     (index) => {
                         this.courseIndex = index
                         this.startQuery();
@@ -68,23 +67,34 @@ export class ResultController extends ConversationController {
 
     private async startQuery() {
         await this.conversation.say(
-            `Anwer the following queries for ${CourseList[this.courseIndex].title} result:`,
+            `Anwer the following queries for ${courseList[this.courseIndex].title} result:`,
             { typing: true }
         );
+
         let firstQueryDone: boolean = false;
         let urlParams = [];
-        const numberOfParams = CourseList[this.courseIndex].params.length;
+        const numberOfParams = courseList[this.courseIndex].params.length;
 
-        const queryFuncs = await CourseList[this.courseIndex].params.map(param => {
+        const queryFuncs = await courseList[this.courseIndex].params.map((param, funcIndex) => {
             return (callbacks, index = 1) => {
-                const txtQuery =
-                    `Enter ${param.title}: ${firstQueryDone ? 'and type "reset" to restart the query' : ""}`;
-                const query = {
-                    text: txtQuery,
-                    quickReplies: [
-                        ...firstQueryDone ? [TemplateQuickReplies.reset] : [],
-                        TemplateQuickReplies.cancel
-                    ]
+                let query;
+                if (typeof param.options !== "undefined") {
+                    console.log("Has Methods");
+                    query = NavigationMessage(
+                        `Select your ${param.title}`,
+                        param.options,
+                        {cancel: true }
+                    );
+                } else {
+                    const txtQuery =
+                        `Enter ${param.title}: ${firstQueryDone ? 'and type "reset" to restart the query' : ""}`;
+                    query = {
+                        text: txtQuery,
+                        quickReplies: [
+                            ...firstQueryDone ? [TemplateQuickReplies.reset] : [],
+                            TemplateQuickReplies.cancel
+                        ]
+                    }
                 }
 
                 const answer = (payload, convo) => {
@@ -94,7 +104,17 @@ export class ResultController extends ConversationController {
                     } else if (text.match(REG_RESET) && firstQueryDone) {
                         this.startQuery();
                     } else {
-                        urlParams[param.field] = text;
+                        if (typeof param.options !== "undefined") {
+                            this.getChoice(text, param.options, (index) => {
+                                urlParams[param.field] = param.options[index].value
+                            },
+                                () => {
+                                    this.conversation.say(invalidInputMessage);
+                                    queryFuncs[funcIndex](queryFuncs);
+                                })
+                        } else {
+                            urlParams[param.field] = text;
+                        }
                         firstQueryDone = true;
                         if (index < numberOfParams) {
                             callbacks[index](callbacks, index + 1);
@@ -103,7 +123,6 @@ export class ResultController extends ConversationController {
                         }
                     }
                 }
-
                 this.conversation.ask(query, answer, [], { typing: true });
             };
         });
@@ -111,17 +130,17 @@ export class ResultController extends ConversationController {
         queryFuncs[0](queryFuncs);
     }
 
-    private showResult(urlParams) {
+    private async showResult(urlParams) {
         console.log(urlParams)
-        let url = rootUrl + CourseList[this.courseIndex].urlExt + '?';
+        let url = rootUrl + courseList[this.courseIndex].urlExt + '?';
         for (let key in urlParams) {
             url += `${key}=${urlParams[key]}&`
         }
         console.log(url);
         try {
-            request(url).then((html => {
+            await request(url).then((html => {
                 console.log(html);
-                const parser = CourseList[this.courseIndex].parser;
+                const parser = courseList[this.courseIndex].parser;
                 let parserResponse = parser(html);
                 if (parserResponse) {
                     this.conversation.say(resultTextOutput(parserResponse));

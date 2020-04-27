@@ -1,5 +1,5 @@
 import {canceledMessage, goodByeMessage, someErrorMessage, invalidInputMessage} from '../templates/common'
-import { NavigationItemView, NavigationItem, NavigationItemFunctional} from "../types/common";
+import { NavigationItemFunctional} from "../types/types";
 import * as nlp from '../lib/nlp';
 
 export abstract class ConversationController {
