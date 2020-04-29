@@ -16,7 +16,7 @@ export function welcomeText(payload, chat) {
 export function thankReply(payload, chat) {
     chat.getUserProfile().then((user) => {
         const reply = {
-            text: `you are welcome ${user.first_name}. Would you like to donate me?`,
+            text: `you are welcome${user.first_name? ` ${user.first_name}`: ""}. Would you like to donate me?`,
             buttons: [
                 DonateButton,
             ]
@@ -24,7 +24,6 @@ export function thankReply(payload, chat) {
         chat.say(reply);
     });
 }
-//TODO REPORT A BUG
 export function forgiveMeReply(payload, chat) {
     const msg = {
         text: `I am really sorry. I am under developement. My developer is always working hard to develope me. If you have faced any problem or want to request new feature you can leave a feedback`,
@@ -38,7 +37,7 @@ export function forgiveMeReply(payload, chat) {
 export function goodByeReply(payload, chat) {
     chat.getUserProfile().then((user) => {
         const msg = {
-            text: `Good Bye ${user.first_name}. See you again.`,
+            text: `Good Bye${user.first_name? ` ${user.first_name}`: ""}. See you again.`,
             buttons: [
                 DonateButton
             ]
