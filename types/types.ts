@@ -42,3 +42,14 @@ export interface Course extends NavigationItem {
 	parser: CallableFunction
 	params: { field: string, title: string, options?: FormOptions[] }[]
 }
+
+//DictonaryWords
+interface DictonaryWord {
+	pron: string[],
+	bn: string,
+	en: string,
+	bn_syns: string[],
+	en_syns: string[],
+	sents: string[]
+}
+

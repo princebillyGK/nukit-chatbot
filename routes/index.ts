@@ -3,6 +3,7 @@ import { NavigationItemFunctional } from '../types/types'
 import { welcomeText, openNavigation, thankReply, goodByeReply, forgiveMeReply, sorryReply } from '../controllers/common'
 import { CoronaController } from '../controllers/CoronaController';
 import { ResultController } from '../controllers/ResultController'
+import { DictonaryController } from '../controllers/DictonaryController'
 
 
 export async function Router(payload, chat) {
@@ -23,6 +24,11 @@ export async function Router(payload, chat) {
             title: "Navigation Menu",
             tags: ['nukit', 'menu', 'navigation', 'help'],
             callback: openNavigation
+        },
+        {
+            title: "Dictonary",
+            tags: ['meaning', 'অর্থ', 'ortho', 'in bengali', 'in english'],
+            callback: (payload, chat) => new DictonaryController(payload, chat)
         }
         // {
         //     title: "Check News",
@@ -30,14 +36,6 @@ export async function Router(payload, chat) {
         //     img: 'https://i.ibb.co/mFKXVys/news.png'
         // },
         // {
-        //     title: "Report a bug",
-        //     code: 'REPORT',
-        //     img: 'https://i.ibb.co/tB5QL04/bug.png'
-        // },
-        // {
-        //     title: "Donate",
-        //     code: 'DONATE',
-        //     img: ' https://i.ibb.co/k824zx7/donate.png'
         // },
     ]
     // const { sentiment: [{ value: conduct }] } = entities;
