@@ -44,7 +44,7 @@ export interface Course extends NavigationItem {
 }
 
 //DictonaryWords
-interface DictonaryWord {
+export interface DictonaryWord {
 	pron: string[],
 	bn: string,
 	en: string,

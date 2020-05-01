@@ -8,6 +8,7 @@ import { DictonaryController } from '../controllers/DictonaryController'
 
 export async function Router(payload, chat) {
     const text = payload.message.text;
+
     const mainMenu: NavigationItemFunctional[] = [
         {
             title: "Corona Info",
@@ -27,7 +28,7 @@ export async function Router(payload, chat) {
         },
         {
             title: "Dictonary",
-            tags: ['meaning', 'অর্থ', 'ortho', 'in bengali', 'in english'],
+            tags: ['meaning', 'bengali', 'english', 'dictonary', 'mean', 'definition'],
             callback: (payload, chat) => new DictonaryController(payload, chat)
         }
         // {

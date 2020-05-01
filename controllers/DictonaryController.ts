@@ -1,23 +1,88 @@
 import { ConversationController } from '../abstract/ConversationController';
-import { bnDictonary } from '../data/bangla-dictonary.data'
-import * as nlp from '../lib/nlp';
-import { start } from 'repl';
-
+import { bnDictonary } from '../data/dictonary/bangla-dictonary.data';
+import { REG_FIND_MEANING } from '../data/dictonary/regex.data'
+import { sorryReply } from './common';
+import { DictonaryWord } from '../types/types';
+import { toTitleCase } from '../lib/utill';
 
 export class DictonaryController extends ConversationController {
+    private readonly word: string;
+    private result: DictonaryWord;
+    private wordln: ("BN" | "EN");
+
     constructor(payload, chat) {
         super(chat);
         const text = payload.message.text;
-        if(nlp.isInString(text, ['bengali', 'bangla'])) {
-            //regex to get the word
-            //send to bengali meaning finder
-        } else if (nlp.isInString(text, ['english'])) {
-            //regex to get the word
-            //send to english meaning finder
-        } else {
-            //regex to get the word
-            //send to unknown meaning finder
+        try {
+            this.word = this.getWord(text);
+            // console.log(this.word);
+            this.findMeaning();
+        } catch (e) {
+            console.log(e);
+            this.endConversation();
+            sorryReply(payload, chat);
         }
     }
 
+    private getWord(text) {
+        for (const regex of REG_FIND_MEANING) {
+            const temp = text.match(regex)
+            if (temp != null && temp[1] != undefined) {
+                return temp[1];
+            }
+        }
+        throw new Error("No word found");
+    }
+
+    private findMeaning() {
+        this.result = bnDictonary.find(tempWord => ((tempWord.bn == this.word) || (tempWord.en == this.word)));
+        if (this.result == undefined) {
+            this.conversation.say("The word is unknown to me");
+            this.endConversation();
+            return;
+        }
+
+        //set word language
+        if (this.result.bn == this.word) {
+            this.wordln = "BN";
+        } else {
+            this.wordln = "EN";
+        }
+
+        // console.log(JSON.stringify(this.result))
+        this.showWordDefination();
+    }
+
+    private showWordDefination() {
+        const wordln = this.wordln;
+        const reply =
+        {
+            text: ` *${toTitleCase(this.word)}* অর্থ ${wordln == "BN" ? this.result.en : this.result.bn}
+        \`\`\`more: ${wordln == "BN" ? this.result.en_syns.join(', ') : this.result.bn_syns.join(', ')}\`\`\`
+        ${wordln == "EN" && this.result.sents.length != 0 ? '```Examples: ' + this.result.sents.join(', ').replace(/<[^>]*>?/gm, '') + '```' : ""}`,
+            quickReplies: [
+                ...this.result.bn_syns
+                    .slice(0, 5)
+                    .filter(str => str.split(" ").length <= 1)
+                    .filter(str => bnDictonary.findIndex(item => item.bn == str) != -1)
+                    .slice(0, 3)
+                    .map(sugg => ({
+                        content_type: "text",
+                        title: `${sugg} meaning`,
+                    })),
+                ...this.result.en_syns
+                    .slice(0, 5)
+                    .filter(str => str.split(" ").length <= 1)
+                    .filter(str => bnDictonary.findIndex(item => item.en == str) != -1)
+                    .slice(0, 3)
+                    .map(sugg => ({
+                        content_type: "text",
+                        title: `${sugg} meaning`,
+                    }))
+            ]
+        }
+
+        this.conversation.say(reply);
+        this.endConversation();
+    }
 }
