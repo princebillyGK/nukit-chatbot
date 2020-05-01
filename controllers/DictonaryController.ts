@@ -24,7 +24,7 @@ export class DictonaryController extends ConversationController {
         }
     }
 
-    private getWord(text:string):string {
+    private getWord(text: string): string {
         for (const regex of REG_FIND_MEANING) {
             const temp = text.match(regex)
             if (temp != null && temp[1] != undefined) {
@@ -56,11 +56,12 @@ export class DictonaryController extends ConversationController {
 
     private showWordDefination() {
         const wordln = this.wordln;
+        const textReply = `*${toTitleCase(this.word)}* অর্থ ${wordln == "BN" ? this.result.en : this.result.bn}
+        ${wordln == "BN" && this.result.bn_syns.length != 0 ? "```more: " + this.result.en_syns.join(', ') + "```" : (this.result.en_syns.length != 0 ? "```more: " + this.result.bn_syns.join(', ') + "```" : "")}
+        ${wordln == "EN" && this.result.sents.length != 0 ? '```Examples: ' + this.result.sents.join(', ').replace(/<[^>]*>?/gm, '') + '```' : ""}`
         const reply =
         {
-            text: ` *${toTitleCase(this.word)}* অর্থ ${wordln == "BN" ? this.result.en : this.result.bn}
-        \`\`\`more: ${wordln == "BN" ? this.result.en_syns.join(', ') : this.result.bn_syns.join(', ')}\`\`\`
-        ${wordln == "EN" && this.result.sents.length != 0 ? '```Examples: ' + this.result.sents.join(', ').replace(/<[^>]*>?/gm, '') + '```' : ""}`,
+            text: textReply,
             quickReplies: [
                 ...this.result.bn_syns
                     .slice(0, 5)
@@ -83,7 +84,7 @@ export class DictonaryController extends ConversationController {
             ]
         }
 
-        this.conversation.say(reply);
+        this.conversation.say(reply.quickReplies.length == 0 ? textReply : reply);
         this.endConversation();
     }
 }
