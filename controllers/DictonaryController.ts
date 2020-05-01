@@ -14,8 +14,8 @@ export class DictonaryController extends ConversationController {
         super(chat);
         const text = payload.message.text;
         try {
-            this.word = this.getWord(text);
-            // console.log(this.word);
+            this.word = this.getWord(text.toLowerCase());
+            console.log(this.word);
             this.findMeaning();
         } catch (e) {
             console.log(e);
@@ -24,7 +24,7 @@ export class DictonaryController extends ConversationController {
         }
     }
 
-    private getWord(text) {
+    private getWord(text:string):string {
         for (const regex of REG_FIND_MEANING) {
             const temp = text.match(regex)
             if (temp != null && temp[1] != undefined) {
@@ -35,7 +35,8 @@ export class DictonaryController extends ConversationController {
     }
 
     private findMeaning() {
-        this.result = bnDictonary.find(tempWord => ((tempWord.bn == this.word) || (tempWord.en == this.word)));
+        // console.log(bnDictonary);
+        this.result = bnDictonary.find(tempWord => ((tempWord.bn === this.word) || (tempWord.en === this.word)));
         if (this.result == undefined) {
             this.conversation.say("The word is unknown to me");
             this.endConversation();
