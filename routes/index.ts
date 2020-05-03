@@ -11,6 +11,11 @@ export async function Router(payload, chat) {
 
     const mainMenu: NavigationItemFunctional[] = [
         {
+            title: "Dictonary",
+            tags: ['meaning', 'bengali', 'english', 'dictonary', 'mean', 'definition'],
+            callback: (payload, chat) => new DictonaryController(payload, chat)
+        },
+        {
             title: "Corona Info",
             tags: ['corona', 'covid'],
             callback: (payload, chat) => new CoronaController(payload, chat)
@@ -25,11 +30,6 @@ export async function Router(payload, chat) {
             title: "Navigation Menu",
             tags: ['nukit', 'menu', 'navigation', 'help'],
             callback: openNavigation
-        },
-        {
-            title: "Dictonary",
-            tags: ['meaning', 'bengali', 'english', 'dictonary', 'mean', 'definition'],
-            callback: (payload, chat) => new DictonaryController(payload, chat)
         }
         // {
         //     title: "Check News",
