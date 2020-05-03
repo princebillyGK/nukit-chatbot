@@ -1,20 +1,16 @@
 import { NavigationQuickReply } from '../components/common'
-import {NavigationItemView } from '../types/types';
+import {NavigationItemView, NavigationMessageOptions } from '../types/types';
 export const invalidInputMessage = '⚠️ | Invalid input';
 export const someErrorMessage = '🤔 | Something went wrong please try again letter';
 export const canceledMessage = '😧 | Ok fine.';
 export const goodByeMessage = '👋 | Good Bye for now! See you again';
 
-interface DefaultNavigationMessageOptions {
-    cancel?: boolean,
-    reset?: boolean
-}
-const defaultNavigationMessageOptions = {
+const defaultNavigationMessageOptions:NavigationMessageOptions = {
     cancel: false,
     reset: false
 }
 
-export const NavigationMessage = (heading:string, navigation:NavigationItemView[], options:DefaultNavigationMessageOptions =defaultNavigationMessageOptions) => {
+export const NavigationMessage = (heading:string, navigation:NavigationItemView[], options:NavigationMessageOptions =defaultNavigationMessageOptions) => {
     let text: string = `${heading}\n`;
     text+= navigation.map((item): string =>
         `> ${item.title}`).join('\n');
@@ -29,7 +25,7 @@ export const NavigationMessage = (heading:string, navigation:NavigationItemView[
 
     const query = {
         text,
-        quickReplies: NavigationQuickReply(navigation)
+        quickReplies: NavigationQuickReply(navigation, options)
     }
     return query;
 }

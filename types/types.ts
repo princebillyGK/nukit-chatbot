@@ -12,6 +12,11 @@ export interface NavigationItemFunctional {
     callback?: CallableFunction
 }
 
+export interface NavigationMessageOptions {
+    cancel?: boolean,
+    reset?: boolean
+}
+
 
 export interface NavigationItem extends NavigationItemView, NavigationItemFunctional {}
 

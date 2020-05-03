@@ -1,4 +1,4 @@
-import { NavigationItemView } from '../types/types';
+import { NavigationItemView, NavigationMessageOptions } from '../types/types';
 import { donateURL, feedBackURL } from '../data/metadata';
 
 export const TemplateQuickReplies = {
@@ -24,7 +24,11 @@ export const TemplateQuickReplies = {
     },
 };
 
-export function NavigationQuickReply(navigationItems: NavigationItemView[]) {
+const defaultNavigationMessageOptions:NavigationMessageOptions = {
+    cancel: false,
+    reset: false
+}
+export function NavigationQuickReply(navigationItems: NavigationItemView[], options:NavigationMessageOptions =defaultNavigationMessageOptions) {
     return [
         ...navigationItems.map((item) => {
             return {
@@ -33,7 +37,8 @@ export function NavigationQuickReply(navigationItems: NavigationItemView[]) {
                 image_url: item.img
             }
         }),
-        TemplateQuickReplies.cancel
+        ...options.reset? [TemplateQuickReplies.reset]:[],
+        ...options.cancel? [TemplateQuickReplies.cancel]:[],
     ];
 }
 
