@@ -1,28 +1,27 @@
 import { DatabaseConfiguration } from '../types/types'
 
 export class Database {
-    private db: GoogleAppsScript.JDBC.JdbcConnection;
-    private readonly options: GoogleAppsScript.JDBC.ConnectionAdvancedParameters
+    db: GoogleAppsScript.JDBC.JdbcConnection;
+    private readonly username: string;
+    private readonly password: string;
     private readonly connectionString: string;
 
     constructor(config: DatabaseConfiguration) {
-        this.options = {
-            user: config.username,
-            password: config.password
-        };
-        this.connectionString = config.jdbcString
+        this.username = config.username;
+        this.password = config.password;
+        this.connectionString = config.jdbcString;
     }
 
     public connect() {
-        this.db = Jdbc.getConnection(this.connectionString, this.options)
+        this.db = Jdbc.getConnection(this.connectionString, this.username, this.password)
     }
 
-    public disconnect () {
+    public disconnect() {
         this.db.close();
     }
 
     private ensureDbConnection() {
-        if(this.db === undefined) {
+        if (this.db === undefined) {
             throw new Error("Database is not connected");
         }
     }
@@ -55,6 +54,7 @@ export class Database {
             return this.prepareQuery(sql, param).executeQuery();
         } else {
             return this.db.createStatement().executeQuery(sql);
+            
         }
     }
 }

@@ -3,3 +3,7 @@ export interface DatabaseConfiguration {
     password: string,
     jdbcString: string,
 }
+
+export interface DatabaseConfigurations {
+ [key: string]: DatabaseConfiguration;
+}

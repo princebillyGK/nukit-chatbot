@@ -1,7 +1,12 @@
-import {DatabaseConfiguration } from '../types/types';
+import { DatabaseConfigurations } from "../types/types";
+const properties = PropertiesService.getScriptProperties();
 
-export const DATABASECONFIG:DatabaseConfiguration = {
-    username: '8zMiem5gz4',
-    password: '1jvBG7D8mB',
-    jdbcString: 'jdbc:mysql://remotemysql.com/8zMiem5gz4'
-};
+const DBCONFIGS:DatabaseConfigurations = {
+    primarydb: {
+        username: properties.getProperty('DBUSERNAME') as string,
+        password: properties.getProperty('DBPASSWORD') as string,
+        jdbcString: properties.getProperty('DBCONNECTIONURL') as string 
+    }
+}
+
+export {DBCONFIGS}
