@@ -1,4 +1,4 @@
-export class FormController {
+export class FormService {
     readonly form: GoogleAppsScript.Forms.Form;
 
     constructor(id:string) {

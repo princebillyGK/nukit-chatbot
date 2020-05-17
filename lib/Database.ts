@@ -54,7 +54,6 @@ export class Database {
             return this.prepareQuery(sql, param).executeQuery();
         } else {
             return this.db.createStatement().executeQuery(sql);
-            
         }
     }
 }
