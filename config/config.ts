@@ -8,7 +8,7 @@ const DBCONFIGS: DatabaseConfigurations = {
         jdbcString: properties.getProperty('DBCONNECTIONURL') as string
     }
 }
-const GOOGLESERVICESINFO: GoogleServiceConfig= {
+const GOOGLESERVICESINFO: GoogleServiceConfig = {
     /**
      * Notes upload form
      */
@@ -18,8 +18,11 @@ const GOOGLESERVICESINFO: GoogleServiceConfig= {
 }
 
 const WEBAPPURL = {
-    dev: properties.getProperty('WEBAPPDEVLINK'),
-    production: properties.getProperty('WEBAPPPRODUCTIONLINK')
+    dev: properties.getProperty('WEBAPPDEVLINK') as string,
+    production: properties.getProperty('WEBAPPPRODUCTIONLINK') as string
 }
+
+export const SUPPORTEMAIL = properties.getProperty('SUPPORTEMAIL') as string
+
 
 export { DBCONFIGS, GOOGLESERVICESINFO, WEBAPPURL };

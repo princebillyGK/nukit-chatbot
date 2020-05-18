@@ -24,7 +24,9 @@ export class Note {
 
         //get ID of inserted row
         const getIDStmt = "select max(id) from note";
-        const noteID = db.executeQuery(getIDStmt).getInt(0);
+        const noteIDResponse = db.executeQuery(getIDStmt);
+        noteIDResponse.next();
+        const noteID = noteIDResponse.getInt(1);
         console.log("noteID: " + noteID);
 
         if (verificationToken) {
