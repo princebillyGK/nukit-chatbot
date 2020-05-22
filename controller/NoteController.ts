@@ -6,7 +6,7 @@ export default class NoteController {
     }
 
     public removeFile() {
-        Drive.Files?.remove(Note.getInfo(this.id).driveURL);
+        Drive.Files?.remove(Note.getInfo(this.id).driveID);
     }
 
     public rejectSubmission() {

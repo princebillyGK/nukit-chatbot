@@ -25,3 +25,4 @@ alter table noteVerification modify verificationToken varchar(36);
 select * from note;
 select * from noteVerification;
 describe note;
+describe noteVerification;

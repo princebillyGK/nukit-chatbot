@@ -3,13 +3,13 @@ import { VerficationResponseData, NoteVerification } from '../types/types';
 import { DateUtil } from '../lib/util';
 import Note from '../models/Note'
 import NoteController from '../controller/NoteController';
-import { NotFoundError } from '../lib/error';
+import { SUPPORTEMAIL } from '../config/config'
 
 /** verifies files **/
 function doGet(e: any) { // eslint-disable-line no-unused-vars
-    const { v: verficationToken, nid: id, action } = e.parameter;
+    const { v: verificationToken, nid: id, action } = e.parameter;
     if ( // check if parmater is missing or invalid
-        verficationToken === undefined
+        verificationToken === undefined
         || id === undefined
         || (
             action !== 'approve'
@@ -31,15 +31,13 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
     }
 
     if (vinfo.verificationToken === null) {
-        createVerificationResponse(
+        return createVerificationResponse(
             VERFICATIONRESPONSEDATA.expiredToken(
                 DateUtil.convertMysqlDateTimetoDate(vinfo.verificationTime).toString())
         );
     }
 
-    console.log(verficationToken);
-    console.log(vinfo.verficationToken);
-    if (verficationToken !== vinfo.verificationToken) { //if token wrong
+    if (verificationToken !== vinfo.verificationToken) { //if token wrong
         return createVerificationResponse(VERFICATIONRESPONSEDATA.invalidToken());
     }
 
@@ -54,7 +52,7 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
             fileDescription: noteData.description,
             previewLink: noteData.driveURL
         });
-        createVerificationResponse(VERFICATIONRESPONSEDATA.appoved(note.id, vinfo.verificationToken));
+        return createVerificationResponse(VERFICATIONRESPONSEDATA.approved(note.id, vinfo.verificationToken));
     } else { //verification rejected
         note.rejectSubmission();
         sendConfirmationEmail(noteData.uploaderEmail, {
@@ -62,18 +60,19 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
             fileTitle: noteData.title,
             fileDescription: noteData.description,
         });
-        createVerificationResponse(VERFICATIONRESPONSEDATA.appoved(note.id, vinfo.verificationToken));
+        return createVerificationResponse(VERFICATIONRESPONSEDATA.rejected(note.id, vinfo.verificationToken));
     }
 }
 
 function sendConfirmationEmail(recipent: string, data: { isApproved: boolean, fileTitle: string, fileDescription: string, previewLink?: string }) {
     const templateEmail = HtmlService.createTemplateFromFile('email/fileConfirmation.html');
-    templateEmail.data = data;
+    templateEmail.data = data; 
     const emailBody = templateEmail.evaluate().getContent();
     GmailApp.sendEmail(
         recipent,
         data.isApproved ? "NUKIT - file has been accepted" : "NUKIT - file has been rejected",
-        emailBody
+        '',
+        { htmlBody: emailBody, replyTo: SUPPORTEMAIL }
     );
 }
 
@@ -84,3 +83,22 @@ function createVerificationResponse(data: VerficationResponseData) {
     html.addMetaTag('viewport', 'width=device-width, initial-scale=1');
     return html;
 }
+
+function testDoget() { // eslint-disable-line no-unused-vars
+    var eventObject = 
+      {
+        "parameter": {
+          "v": "febe4933-a898-4e73-bcec-5f5dbb9f1c2a",
+          "nid": "34",
+          "action": "reject"
+        },
+        "contextPath": "",
+        "contentLength": -1,
+        "queryString": "v=febe4933-a898-4e73-bcec-5f5dbb9f1c2a&nid=34&action=reject",
+        "parameters": {
+          "action": ["view"],
+          "page": ["3"]
+        }
+      }
+    doGet(eventObject);
+  }

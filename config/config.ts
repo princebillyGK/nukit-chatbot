@@ -22,7 +22,7 @@ const WEBAPPURL = {
     production: properties.getProperty('WEBAPPPRODUCTIONLINK') as string
 }
 
-export const SUPPORTEMAIL = properties.getProperty('SUPPORTEMAIL') as string
+const SUPPORTEMAIL = properties.getProperty('SUPPORTEMAIL') as string
 
 
-export { DBCONFIGS, GOOGLESERVICESINFO, WEBAPPURL };
+export { DBCONFIGS, GOOGLESERVICESINFO, WEBAPPURL, SUPPORTEMAIL };

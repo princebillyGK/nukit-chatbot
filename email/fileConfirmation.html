@@ -263,8 +263,8 @@
                                                          <strong>Nukit National University
                                                          chatbot<br><br>
                                                          <span
-                                                            style="font-size:20px; color: <? data.type.isApproved? '#2e7d32': '#c62828'?>">
-                                                         <? data.type.isApproved? "Your file has been reviewed and now you can view your file." : "Your file has been rejected." ?>
+                                                            style="font-size:20px; color: <? data.isApproved? '#2e7d32': '#c62828'?>">
+                                                         <?= data.isApproved? "Your file has been reviewed and now you can view your file." : "Your file has been rejected." ?>
                                                          </span></strong>
                                                       </p>
                                                    </td>
@@ -292,14 +292,14 @@
                                                          style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:14px;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;">
                                                          <b><span style="color:#008080;">File
                                                          Title:</span>
-                                                         <? data.fileTitile ?></b><br><strong><span
+                                                         <?= data.fileTitle ?></b><br><strong><span
                                                             style="color:#008080;">File
                                                          description:</span>
-                                                         <?data.fileDescription ?><br>
+                                                         <?=data.fileDescription ?><br>
                                                          <? if(data.previewLink) { ?>
                                                          <span style="color:#008080;">Preview link:
                                                          </span>
-                                                         <?data.previewLink?></strong>
+                                                         <?=data.previewLink?></strong>
                                                          <? }?>
                                                       </p>
                                                 </tr>
