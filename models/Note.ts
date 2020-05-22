@@ -2,6 +2,7 @@ import { Database } from '../lib/Database'
 import { DBCONFIGS } from '../config/config';
 import { DateUtil } from '../lib/util';
 import { Note as NoteInterface, NoteVerification } from '../types/types'
+import { NotFoundError } from '../lib/error';
 
 const db = new Database(DBCONFIGS.primarydb);
 module Note {
@@ -50,7 +51,7 @@ module Note {
         db.connect();
         const result = db.executeQuery(getDriveIdofFileStmt, [id]);
         if (!result.next()) {
-            throw new Error("Not Found");
+            throw new NotFoundError("Id not found in records");
         }
         const data = {
             subjectCode: parseInt(result.getString('subjectCode')),
@@ -72,7 +73,7 @@ module Note {
         const result = db.executeQuery(getVerficationStmt, [id]);
         if (!result.next()) {
             db.disconnect();
-            throw new Error("Not found");
+            throw new NotFoundError("Id not found in verification records");
         }
 
         const verificationInfo = {

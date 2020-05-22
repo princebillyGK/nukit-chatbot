@@ -3,6 +3,7 @@ import { VerficationResponseData, NoteVerification } from '../types/types';
 import { DateUtil } from '../lib/util';
 import Note from '../models/Note'
 import NoteController from '../controller/NoteController';
+import { NotFoundError } from '../lib/error';
 
 /** verifies files **/
 function doGet(e: any) { // eslint-disable-line no-unused-vars
@@ -18,13 +19,15 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
         return createVerificationResponse(VERFICATIONRESPONSEDATA.invalidLink());
     }
 
-    const note = new NoteController(id);
-    let vinfo: NoteVerification;
 
+    let vinfo: NoteVerification;
     try {
         vinfo = Note.getVerificationInfo(id);
-    } catch {
-        return createVerificationResponse(VERFICATIONRESPONSEDATA.noteNotFound(id));
+    } catch (e) {
+        if (e instanceof NotFoundError) {
+            return createVerificationResponse(VERFICATIONRESPONSEDATA.noteNotFound(id));
+        }
+        throw e;
     }
 
     if (vinfo.verificationToken === null) {
@@ -39,6 +42,7 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
     }
 
     const noteData = Note.getInfo(id);
+    const note = new NoteController(id);
 
     if (action == 'approve') { //verification approved
         note.approveSubmission();
@@ -78,6 +82,3 @@ function createVerificationResponse(data: VerficationResponseData) {
     html.addMetaTag('viewport', 'width=device-width, initial-scale=1');
     return html;
 }
-
-
-
