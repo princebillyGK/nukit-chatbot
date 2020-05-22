@@ -24,7 +24,7 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
     try {
         vinfo = Note.getVerificationInfo(id);
     } catch (e) {
-        if (e instanceof NotFoundError) {
+        if (e.name === "NotFoundError") {
             return createVerificationResponse(VERFICATIONRESPONSEDATA.noteNotFound(id));
         }
         throw e;
@@ -37,6 +37,8 @@ function doGet(e: any) { // eslint-disable-line no-unused-vars
         );
     }
 
+    console.log(verficationToken);
+    console.log(vinfo.verficationToken);
     if (verficationToken !== vinfo.verificationToken) { //if token wrong
         return createVerificationResponse(VERFICATIONRESPONSEDATA.invalidToken());
     }
