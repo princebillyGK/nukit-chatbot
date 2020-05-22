@@ -1,6 +1,7 @@
 import { WEBAPPURL } from '../config/config';
+import {DateUtil}  from '../lib/util'
 import { FileService } from '../service/FileService';
-import { Note } from '../models/Notes';
+import  Note from '../models/Note';
 import {noteVerficationEmail} from '../email/noteVerificationEmail'
 
 const VERFICATIONURL = WEBAPPURL.dev;
@@ -10,7 +11,7 @@ function onNotesFormUpload(e: any) {
   //Extracting Form upload response
   const {
     "namedValues": {
-      "Timestamp": [timestamp],
+      "Timestamp": [uploadTime],
       "Select Subject": [subject],
       "Email Address": [uploaderEmail], //email address of uploader
       "Upload File (PDF)": [driveURL],
@@ -20,7 +21,9 @@ function onNotesFormUpload(e: any) {
   } = e;
 
   const subjectCode = subject.match(/\d+/)[0];
-  const uploadTime = new Date(timestamp).toString();
+  const uploadTimeStamp =  new Date(uploadTime)
+  const uploadTimeinMysqlDatetime =  DateUtil.convertDateToMysqlDateTime(uploadTimeStamp)
+  const uploadTimeInString= uploadTimeStamp.toString();
 
   const driveID = FileService.getIdfromUrl(driveURL)
   const uploadedFile = new FileService(driveID);
@@ -38,7 +41,7 @@ function onNotesFormUpload(e: any) {
       uploaderEmail,
       driveURL,
       driveID,
-      uploadTime
+      uploadTime: uploadTimeinMysqlDatetime
     }, verificationToken);
 
     //email
@@ -48,7 +51,7 @@ function onNotesFormUpload(e: any) {
       title,
       subject,
       description,
-      uploadTime,
+      uploadTime: uploadTimeInString,
       uploaderEmail,
       fileName,
       fileSize,

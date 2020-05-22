@@ -1,6 +1,6 @@
 import { GOOGLESERVICESINFO } from '../config/config';
 import { FormService } from '../service/FormService'
-import { Subject } from '../models/Subject'
+import  Subject  from '../models/Subject'
 
 function syncUpdateForm() {
     // Logger.log(subjects);

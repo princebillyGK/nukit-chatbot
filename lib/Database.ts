@@ -30,7 +30,7 @@ export class Database {
         : GoogleAppsScript.JDBC.JdbcPreparedStatement {
         const stmt: GoogleAppsScript.JDBC.JdbcPreparedStatement
             = this.db.prepareStatement(sql);
-        param.map((value, index) => {
+        param.forEach((value, index) => {
             if (typeof value == 'number') {
                 value = value.toString();
             }
@@ -56,4 +56,5 @@ export class Database {
             return this.db.createStatement().executeQuery(sql);
         }
     }
+
 }

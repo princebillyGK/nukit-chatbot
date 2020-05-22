@@ -5,10 +5,10 @@ export interface DatabaseConfiguration {
 }
 
 export interface DatabaseConfigurations {
- [key: string]: DatabaseConfiguration;
+    [key: string]: DatabaseConfiguration;
 }
 
-export interface GoogleServiceConfig{
+export interface GoogleServiceConfig {
     [key: string]: {
         [key: string]: string
     }
@@ -16,7 +16,8 @@ export interface GoogleServiceConfig{
 
 //Models
 // Notes
-export interface Note{
+export interface Note {
+    id?: string,
     subjectCode: number,
     title: string,
     description: string,
@@ -25,6 +26,20 @@ export interface Note{
     driveID: string
     uploadTime: string,
     verified?: boolean
+}
+
+//Note Verfication 
+export interface NoteVerification {
+    verificationToken: string, 
+    verificationTime: string
+}
+
+//email
+export interface fileConfirmationEmaildata {
+    isApproved: boolean,
+    fileTitle: string,
+    fileDescription: string,
+    previewLink: string
 }
 
 export interface NoteVerficationEmailOption {
@@ -40,4 +55,21 @@ export interface NoteVerficationEmailOption {
     rejectURL: string
 }
 //Notes return type
+
+//response 
+export interface VerficationResponseDataSet {
+    [key: string]: VerficationResponseDataGenerator
+}
+
+export interface VerficationResponseDataGenerator {
+    (...a: any[]): VerficationResponseData
+}
+
+export interface VerficationResponseData {
+    title: string,
+    icon: string,
+    color: string,
+    primaryText: string,
+    secondaryText: string
+}
 

@@ -2,47 +2,14 @@
 <html lang="en">
 
 <?
-    const template = {
-        approved: {
-            title: 'Approve Request',
-            icon: 'check',
-            color: 'success',
-            primaryText: 'The file has been successfully approved',
-            secondaryText: 'The verification token will expired now'
-        },
-        approved: {
-            title: 'Reject Request',
-            icon: 'cross',
-            color: 'error',
-            primaryText: 'The file has been successfully rejected',
-            secondaryText: 'The verification token will expired now'
-        },
-        invalidLink: {
-            title: 'Invalid Link',
-            icon: 'gray',
-            color: 'warning',
-            primaryText: 'The link is either invalid or expired',
-            secondaryText: 'Verification link are for one time use only'
-        },
-        invalidToken: {
-            title: "Forbidden Access",
-            icon: 'stop',
-            color: 'warning',
-            primaryText: 'The verification token is invalid',
-            secondaryText: 'verification link is for one time use only'
-        }
-    }
-
-    const {title, icon, color, primaryText, secondaryText} = token[data.type];
+    const {title, icon, color, primaryText, secondaryText} = data
 ?>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>NUKIT -
-        <?=title?>
-    </title>
+    <title>NUKIT-<?=title?></title>
     <!-- spectre css -->
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
@@ -54,7 +21,7 @@
     <header class="navbar">
         <section class="navbar-section p-2">
             <img src="https://i.ibb.co/bbWFYqt/image.png" width="32px" alt="">
-            <a href="..." class="navbar-brand mr-2">NUKIT</a>
+            <span class="navbar-brand mr-2">NUKIT</span>
         </section>
         <section class="navbar-section">
             <a href="tel:+8801521432424" class="btn btn-link">Support</a>
@@ -62,9 +29,9 @@
     </header>
     <div class="empty">
         <div class="empty-icon">
-            <i class="text-<?=color?>> icon-4x icon icon-<?=icon?>"></i>
+            <i class="text-<?=color?> icon-4x icon icon-<?=icon?>"></i>
         </div>
-        <p class="empty-title h5 text-success"><?=primaryText?></p>
+        <p class="empty-title h5 text-<?=color?>"><?=primaryText?></p>
         <p class="empty-subtitle"><?=secondaryText?></p>
     </div>
 </body>
