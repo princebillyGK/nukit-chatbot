@@ -4,6 +4,7 @@ import { welcomeText, openNavigation, thankReply, goodByeReply, forgiveMeReply, 
 import { CoronaController } from '../controllers/CoronaController';
 import { ResultController } from '../controllers/ResultController'
 import { DictonaryController } from '../controllers/DictonaryController'
+import { NoteController } from '../controllers/NoteController'
 
 
 export async function Router(payload, chat) {
@@ -30,6 +31,11 @@ export async function Router(payload, chat) {
             title: "Navigation Menu",
             tags: ['nukit', 'menu', 'navigation', 'help'],
             callback: openNavigation
+        },
+        {
+            title: "Note",
+            tags: ['note','file', 'sheet', 'paper', 'suggestion'],
+            callback: (payload, chat) => new NoteController(payload, chat)
         }
         // {
         //     title: "Check News",

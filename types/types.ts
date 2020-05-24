@@ -58,3 +58,4 @@ export interface DictonaryWord {
 	sents: string[]
 }
 
+

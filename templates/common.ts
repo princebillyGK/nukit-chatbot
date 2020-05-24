@@ -29,3 +29,4 @@ export const NavigationMessage = (heading:string, navigation:NavigationItemView[
     }
     return query;
 }
+
