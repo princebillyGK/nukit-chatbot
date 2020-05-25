@@ -1,0 +1,15 @@
+body {
+  font-family: "Roboto", sans-serif; }
+
+header .navbar-brand {
+  font-weight: 100; }
+  header .navbar-brand .navbar-brand-image {
+    width: 80px;
+    padding-right: 10px; }
+
+main .searchbox {
+  padding-top: 10px;
+  padding-bottom: 10px; }
+
+main .page-nav {
+  margin-top: 10px; }
